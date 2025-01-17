@@ -13,9 +13,12 @@ import FacultyLogin from './pages/FacultyLogin';
 import AddFaculty from './pages/admin/AddFaculty';
 import AllFaculty from './pages/admin/AllFaculty';
 import FacultyDashboard from './pages/FacultyDashboard';
-import StudentSubjects from './pages/admin/StudentSubjects';
+import Subject from './pages/student/Subject';
 import PaymentHistory from './pages/student/PaymentHistory/PaymentHistory';
 import Result from './pages/admin/Result';
+import Semester from './pages/student/Semester';
+import Dashboard from './pages/student/Dashboard';
+import StudentSubjects from './pages/admin/StudentSubjects';
 
 function App() {
   return (
@@ -23,6 +26,7 @@ function App() {
       <div className="min-h-screen bg-gray-50">
         <Routes>
           <Route path="/" element={<Home/>}/>
+          <Route path="/dashboard" element={<Dashboard/>}/>
           <Route path="/student/payments" element={<PaymentHistory/>}/>
           <Route path="/login" element={<Login />} />
           <Route path="/Facultylogin" element={<FacultyLogin />} />
@@ -36,14 +40,12 @@ function App() {
           <Route path="/admin/addFaculty" element={<AddFaculty/>}></Route>
           <Route path="/admin/result" element={<Result/>}></Route>
           <Route path="/admin/students/:studentId/subjects" element={<StudentSubjects />} />
+
+          <Route path="/payments" element={<PaymentHistory />} />
+          <Route path="/semester" element={<Semester/>} />
+          <Route path="/subject" element={<Subject />} />
+          <Route path="/result" element={<Semester/>} />
           
-          
-          {/* Student Routes */}
-          <Route path="/student/*" element={
-            <ProtectedRoute role="student">
-              <StudentDashboard />
-            </ProtectedRoute>
-          } />
           
           {/* Admin Routes */}
           <Route path="/admin/*" element={
