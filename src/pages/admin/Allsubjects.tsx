@@ -1,8 +1,24 @@
 import { useEffect, useState } from "react";
 import { admin } from "../../services/api";
 
+// Define the Subject interface
+interface Subject {
+  _id: string;
+  code: string;
+  name: string;
+  semester: number;
+  credits: number;
+  department: string;
+  fees: {
+    registration: number;
+    reRegistrationF: number;
+    reRegistrationW: number;
+    challengeValuation: number;
+  };
+}
+
 export default function AllSubjects() {
-  const [subjects, setSubjects] = useState([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOption, setSortOption] = useState("");
 
@@ -19,7 +35,7 @@ export default function AllSubjects() {
     fetchSubjects();
   }, []);
 
-  async function DeleteSubject(subjectId: any, name: string) {
+  async function DeleteSubject(subjectId: string, name: string) {
     const res = confirm(
       "Are you sure you want to delete the subject " + name + "?"
     );

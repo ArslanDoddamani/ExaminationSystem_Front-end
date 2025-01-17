@@ -12,11 +12,14 @@ interface TabsListProps {
 interface TabsTriggerProps {
   value: string;
   children: React.ReactNode;
+  activeTab?: string;
+  setActiveTab?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 interface TabsContentProps {
   value: string;
   children: React.ReactNode;
+  activeTab?: string;
 }
 
 export const Tabs: React.FC<TabsProps> = ({ defaultValue, children }) => {
@@ -26,7 +29,8 @@ export const Tabs: React.FC<TabsProps> = ({ defaultValue, children }) => {
     <div className="tabs" data-active={activeTab}>
       {React.Children.map(children, child => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child, { activeTab, setActiveTab });
+          // Cast child to the correct type
+          return React.cloneElement(child as React.ReactElement<any>, { activeTab, setActiveTab });
         }
         return child;
       })}
@@ -42,7 +46,7 @@ export const TabsList: React.FC<TabsListProps> = ({ children }) => {
   );
 };
 
-export const TabsTrigger: React.FC<TabsTriggerProps & { activeTab?: string; setActiveTab?: (value: string) => void }> = ({ 
+export const TabsTrigger: React.FC<TabsTriggerProps> = ({ 
   value, 
   children, 
   activeTab,
@@ -62,7 +66,7 @@ export const TabsTrigger: React.FC<TabsTriggerProps & { activeTab?: string; setA
   );
 };
 
-export const TabsContent: React.FC<TabsContentProps & { activeTab?: string }> = ({ 
+export const TabsContent: React.FC<TabsContentProps> = ({ 
   value, 
   children,
   activeTab 

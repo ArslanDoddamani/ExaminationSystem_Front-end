@@ -1,22 +1,26 @@
 import { jwtDecode } from 'jwt-decode';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Faculty, student } from '../../../services/api';
 
-// First, let's add an interface for the Subject type
 interface Subject {
   id: number;
   code: string;
   name: string;
   credits: number;
   grade: string;
+  fees?: { reRegistrationW: number; reRegistrationF: number };
+  _id: string;
+}
+
+interface Faculty {
+  _id: string;
+  name: string;
 }
 
 const ReRegistration = () => {
-
-  // State to manage selected faculty for each subject
-  const [selectedFaculty, setSelectedFaculty] = useState<Record<number, string>>({});
+  const [selectedFaculty, setSelectedFaculty] = useState<Record<string, { facultyId: string }>>({});
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [facultys, setFaculty] = useState([]);
+  const [facultys, setFaculty] = useState<Faculty[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -31,20 +35,19 @@ const ReRegistration = () => {
         const res = await student.rrsubjects(userId);
 
         const subjectDetails = await Promise.all(
-          res.data.data.map(async (id: number, index: number) => {
+          res.data.data.map(async (id: string, index: number) => {
             const subjectRes = await student.getSubjectWithId(id);
             return {
               ...subjectRes.data,
-              grade: res.data.grades[index]
+              grade: res.data.grades[index],
             };
           })
         );
 
-        // Update the state with the retrieved subject details
         setSubjects(subjectDetails);
 
         const facultyDetails = await Faculty.getFacultyByDept(res.data.department);
-        setFaculty(facultyDetails.data.allFaculty)
+        setFaculty(facultyDetails.data.allFaculty);
       } catch (error) {
         console.error("Error fetching re-register subjects:", error);
       }
@@ -53,40 +56,38 @@ const ReRegistration = () => {
     fetchSubjects();
   }, []);
 
-  // Handle re-registration action
-  const handleReRegister = async (subjectId: any) => {
+  const handleReRegister = async (subjectId: string) => {
     try {
       setLoading(true);
       const user = await student.getProfile();
       const subject = subjects.find((subject) => subject._id === subjectId);
-  
+
       if (!subject) {
         alert("Subject not found.");
         return;
       }
 
-      if (subject.grade === 'W') {
-        if (Object.keys(selectedFaculty).length === 0) {
-          alert("Please select a faculty for this subject.");
-          return;
-        }
+      if (subject.grade === "W" && !selectedFaculty[subjectId]) {
+        alert("Please select a faculty for this subject.");
+        return;
       }
-  
-      // Fetch order details
-      const fees = subject.grade === 'W' ? subject.fees?.reRegistrationW : subject.fees?.reRegistrationF;
+
+      const fees = subject.grade === "W" ? subject.fees?.reRegistrationW : subject.fees?.reRegistrationF;
+      if (!fees) {
+        alert("Fees information is missing for the subject.");
+        return;
+      }
+
       const orderResponse = await student.getOrder(fees);
-      
       const { order } = orderResponse.data;
       const apiKeyResponse = await student.getApiKey();
       const apiKey: string = apiKeyResponse.data;
-  
-      // Check if Razorpay is available
+
       if (!(window as any).Razorpay) {
         alert("Razorpay SDK not loaded. Please try again later.");
         return;
       }
-  
-      // Razorpay options
+
       const options = {
         key: apiKey,
         amount: order.amount,
@@ -98,7 +99,7 @@ const ReRegistration = () => {
         },
         handler: async (response: any) => {
           const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
-  
+
           try {
             const verifyResponse = await student.rrSubjectPayment({
               razorpay_order_id,
@@ -108,10 +109,10 @@ const ReRegistration = () => {
               semester: user.data.currentSemester,
               price: fees,
               subjectId: subject._id,
-              type: subject.grade === 'W' ? 'Reregister - W' : 'Reregister - F',
-              facultyId: selectedFaculty.facultyId, // Ensure specific faculty is passed
+              type: subject.grade === "W" ? "Reregister - W" : "Reregister - F",
+              facultyId: selectedFaculty[subject._id]?.facultyId,
             });
-  
+
             if (verifyResponse.data.success) {
               alert("Payment successful! Subjects registered.");
             } else {
@@ -126,7 +127,7 @@ const ReRegistration = () => {
           color: "#3399cc",
         },
       };
-  
+
       const rzp = new (window as any).Razorpay(options);
       rzp.open();
     } catch (error) {
@@ -137,11 +138,9 @@ const ReRegistration = () => {
       setLoading(false);
     }
   };
-  
 
-  // Handle faculty selection change
-  const handleFacultyChange = (subjectId: any, facultyId: any) => {
-    setSelectedFaculty({ subjectId, facultyId });
+  const handleFacultyChange = (subjectId: string, facultyId: string) => {
+    setSelectedFaculty({ ...selectedFaculty, [subjectId]: { facultyId } });
   };
 
   return (
@@ -161,7 +160,7 @@ const ReRegistration = () => {
             </tr>
           </thead>
           <tbody>
-            {subjects.map((subject, index) => (
+            {subjects.map((subject: Subject, index: number) => (
               <tr key={`${subject.id}-${index}`} className="text-center hover:bg-gray-700 transition duration-200">
                 <td className="border border-gray-700 px-4 py-2">{index + 1}</td>
                 <td className="border border-gray-700 px-4 py-2">{subject.code}</td>
@@ -169,13 +168,13 @@ const ReRegistration = () => {
                 <td className="border border-gray-700 px-4 py-2">{subject.credits}</td>
                 <td className="border border-gray-700 px-4 py-2">{subject.grade}</td>
                 <td className="border border-gray-700 px-6 py-2">
-                  {subject.grade !== 'F' ? (
+                  {subject.grade !== "F" ? (
                     <select
                       onChange={(e) => handleFacultyChange(subject._id, e.target.value)}
                       className="bg-gray-800 text-gray-200 border border-gray-600 w-3/4 py-1 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="">Select Faculty</option>
-                      {facultys.map((faculty) => (
+                      {facultys.map((faculty: Faculty) => (
                         <option key={faculty._id} value={faculty._id}>
                           {faculty.name}
                         </option>
@@ -189,7 +188,9 @@ const ReRegistration = () => {
                   <button
                     disabled={loading}
                     onClick={() => handleReRegister(subject._id)}
-                    className={`${loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"} text-white font-semibold py-1 px-4 rounded-lg transition-all duration-300 focus:outline-none`}
+                    className={`${
+                      loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                    } text-white font-semibold py-1 px-4 rounded-lg transition-all duration-300 focus:outline-none`}
                   >
                     Re-register
                   </button>
@@ -204,4 +205,3 @@ const ReRegistration = () => {
 };
 
 export default ReRegistration;
-

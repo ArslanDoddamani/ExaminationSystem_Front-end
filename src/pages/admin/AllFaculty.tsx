@@ -74,7 +74,7 @@ export default function AllFaculty() {
                 </tr>
               </thead>
               <tbody>
-                {filteredFaculties.map((faculty, index) => (
+                {filteredFaculties.map((faculty) => (
                   <tr
                     key={faculty._id}
                     className="even:bg-gray-700 odd:bg-gray-800 hover:bg-gray-600"

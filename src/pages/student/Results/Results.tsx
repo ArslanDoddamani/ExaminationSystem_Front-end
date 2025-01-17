@@ -2,20 +2,38 @@ import { useEffect, useState } from "react";
 import { admin, student } from "../../../services/api";
 import { jwtDecode } from "jwt-decode";
 
+interface Subject {
+  _id: string;
+  code: string;
+  name: string;
+  credits: number;
+  grade: string;
+  fees: {
+    challengeValuation: number;
+  };
+}
+
+interface StudentData {
+  USN: string;
+  name: string;
+  department: string;
+  currentSemester: number;
+}
+
 const Results = () => {
-  const [studentData, setStudentData] = useState(null);
-  const [subjects, setSubjects] = useState([]);
-  const [usn, setUsn] = useState<string | null>("");
+  const [studentData, setStudentData] = useState<StudentData | null>(null);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [usn, setUsn] = useState<string | null>(null);
   const [date, setDate] = useState<Date | null>(null);
   const [isDetailsFetched, setIsDetailsFetched] = useState(false);
-  const [loadingIndex, setLoadingIndex] = useState(null);
+  const [loadingIndex, setLoadingIndex] = useState<number | null>(null);
   const currentTime = new Date();
 
   useEffect(() => {
     async function fetchDetails() {
       try {
         const response = await student.getProfile();
-        setStudentData(response.data);
+        setStudentData(response.data as StudentData); // Cast response data to StudentData
         setIsDetailsFetched(true);
       } catch (err) {
         alert("Error fetching student data.");
@@ -50,10 +68,10 @@ const Results = () => {
       }
 
       const subjectsData = await Promise.all(
-        subjectIds.map(async (subjectId, index) => {
+        subjectIds.map(async (subjectId: string, index: number) => {
           if (
-            semesters[index] == studentData?.currentSemester &&
-            flags[index] == true
+            semesters[index] === studentData?.currentSemester &&
+            flags[index] === true
           ) {
             setDate(new Date(times[index]));
             const subjectDetails = await admin.FindSubject(subjectId);
@@ -66,7 +84,7 @@ const Results = () => {
         })
       );
 
-      const filteredSubjects = subjectsData.filter((subject) => subject !== null);
+      const filteredSubjects = subjectsData.filter((subject) => subject !== null) as Subject[];
       setSubjects(filteredSubjects);
     } catch (error) {
       console.error("Error fetching registered subjects:", error);
@@ -79,10 +97,16 @@ const Results = () => {
     }
   }, [usn, isDetailsFetched]);
 
-  async function initiatePayment(subject, index) {
+  async function initiatePayment(subject: Subject, index: number) {
     try {
       setLoadingIndex(index);
-      const orderResponse = await student.createOrder(studentData?.currentSemester, subject?.fees.challengeValuation);
+      if (!studentData?.currentSemester) {
+        throw new Error("Current semester not found");
+      }
+      const orderResponse = await student.createOrder(
+        studentData.currentSemester,
+        subject?.fees.challengeValuation
+      );
       const { order } = orderResponse.data;
 
       const apiKeyResponse = await student.getApiKey();
@@ -112,9 +136,9 @@ const Results = () => {
               razorpay_payment_id,
               razorpay_signature,
               userId,
-              subjectId: subject?._id,
+              subjectId: subject._id,
               userSem: studentData?.currentSemester,
-              price: subject?.fees.challengeValuation
+              price: subject?.fees.challengeValuation,
             });
 
             if (verifyResponse.data.success) {
@@ -136,14 +160,13 @@ const Results = () => {
     } catch (error) {
       console.error("Error during payment:", error);
       alert("Error during payment. Please try again.");
-    }
-    finally {
+    } finally {
       setLoadingIndex(null);
     }
   }
 
-  const handleChallengeValuation = (subject: any) => {
-    initiatePayment(subject)
+  const handleChallengeValuation = (subject: Subject, index: number) => {
+    initiatePayment(subject, index);
   };
 
   const gradeSystem = {
@@ -180,7 +203,7 @@ const Results = () => {
   return (
     <div key={date?.toISOString()}> {/* Add key to force re-mount */}
       <h1 className="text-3xl font-bold text-center mb-6">Result</h1>
-      {currentTime > date ? (
+      {currentTime > (date ?? new Date()) ? (
         <p className="text-xl text-center text-gray-400">Results not yet announced for this semester</p>
       ) : subjects.length === 0 ? (
         <p className="text-xl text-center text-gray-400">Results not yet announced</p>
@@ -210,20 +233,17 @@ const Results = () => {
                   {subjects.map((item, index) => (
                     <tr
                       key={index}
-                      className={`text-sm ${item?.grade === 'F' || item?.grade === 'W' ? 'bg-red-500 text-white' : 'bg-gray-800 hover:bg-gray-700'} transition duration-200`}
+                      className={`text-sm ${item.grade === 'F' || item.grade === 'W' ? 'bg-red-500 text-white' : 'bg-gray-800 hover:bg-gray-700'} transition duration-200`}
                     >
                       <td className="py-3 px-4 border-b border-gray-600">{index + 1}</td>
-                      <td className="py-3 px-4 border-b border-gray-600">{item?.subject?.code}</td>
-                      <td className="py-3 px-4 border-b border-gray-600">{item?.subject?.name}</td>
-                      <td className="py-3 px-4 border-b border-gray-600">{item?.subject?.credits}</td>
-                      <td className="py-3 px-4 border-b border-gray-600">{item?.grade}</td>
+                      <td className="py-3 px-4 border-b border-gray-600">{item.code}</td>
+                      <td className="py-3 px-4 border-b border-gray-600">{item.name}</td>
+                      <td className="py-3 px-4 border-b border-gray-600">{item.credits}</td>
+                      <td className="py-3 px-4 border-b border-gray-600">{item.grade}</td>
                       <td className="py-3 px-4 border-b border-gray-600">
                         <button
-                          className={`${loadingIndex === index
-                              ? 'bg-gray-600 cursor-not-allowed'
-                              : 'bg-blue-500 hover:bg-blue-600 text-white'
-                            } px-4 py-2 rounded-lg shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300`}
-                          onClick={() => handleChallengeValuation(item?.subject, index)}
+                          className={`${loadingIndex === index ? 'bg-gray-600 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'} px-4 py-2 rounded-lg shadow-md transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300`}
+                          onClick={() => handleChallengeValuation(item, index)}
                           disabled={loadingIndex === index}
                         >
                           {loadingIndex === index ? 'Processing...' : 'Challenge Valuation'}

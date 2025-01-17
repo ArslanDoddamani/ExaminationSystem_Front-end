@@ -11,6 +11,7 @@ interface Payment {
   createdAt: string;
   razorpay_payment_id: string;
   razorpay_order_id: string;
+  subject?: { code: string };
 }
 
 const PaymentHistory = () => {

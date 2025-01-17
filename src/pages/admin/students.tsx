@@ -17,7 +17,7 @@ interface Grade {
 
 interface Student {
   _id: string;
-  USN: number | string;
+  USN: string;
   name: string;
   department: string;
   dateOfBirth: number;

@@ -3,8 +3,20 @@ import { student } from "../../services/api";
 import { admin } from "../../services/api";
 import { jwtDecode } from "jwt-decode";
 
+interface Subject {
+  subject: {
+    code: string;
+    name: string;
+    credits: number;
+    department: string;
+    semester: number;
+  };
+  grade: string;
+  flag: boolean;
+}
+
 const Semester = () => {
-  const [subjects, setSubjects] = useState([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [sortOption, setSortOption] = useState("");
   const [usn, setUsn] = useState<string | null>("");
 
@@ -37,12 +49,12 @@ const Semester = () => {
   
       // Step 2: Fetch full details of each subject and add grades
       const subjectsData = await Promise.all(
-        subjectIds.map(async (subjectId, index) => {
+        subjectIds.map(async (subjectId: string, index: number) => {
           const subjectDetails = await admin.FindSubject(subjectId);
           return {
-            ...subjectDetails.data, // Include subject details
-            grade: grades[index],  // Add corresponding grade
-            flag: flags[index]
+            ...subjectDetails.data, 
+            grade: grades[index],
+            flag: flags[index],
           };
         })
       );
@@ -134,7 +146,7 @@ const Semester = () => {
             </thead>
             <tbody>
               {subjects.map((subject) => (
-                <tr key={subject._id} className="border-b border-gray-700">
+                <tr key={subject.subject.code} className="border-b border-gray-700">
                   <td className="py-2 px-4">{subject?.subject?.code}</td>
                   <td className="py-2 px-4">{subject?.subject?.name}</td>
                   <td className="py-2 px-4">{subject?.subject?.credits}</td>
