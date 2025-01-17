@@ -1,0 +1,64 @@
+const initiatePayment = async (SubjectId: string) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found. Please login again.');
+
+      const decoded = jwtDecode<{ userId: string }>(token);
+      const userId = decoded.userId;
+
+      console.log('User ID: ', userId);
+
+      // Step 1: Create order using service function
+      const orderResponse = await student.createOrder(SubjectId, userId) as OrderResponse;
+      console.log('Order Response: ', orderResponse);
+
+      // Step 2: Get Razorpay API key from service function
+      const apiKey = await student.getApiKey();
+      console.log('Razorpay API Key: ', apiKey);
+
+      // Step 3: Prepare Razorpay options
+      const options = {
+        key: apiKey,
+        amount: orderResponse.order.amount,
+        currency: orderResponse.order.currency,
+        order_id: orderResponse.order.id,
+        callback_url: `${import.meta.env.VITE_ADMIN_BACKEND_URL}/verifypayment`,
+        prefill: {
+          name: 'Your Name',
+          email: 'email@example.com',
+        },
+        theme: {
+          color: '#3399cc',
+        },
+        handler: async (response: any) => {
+          console.log('Payment handler response: ', response);
+
+          try {
+            const verificationResponse = await student.verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              SubjectId,
+              userId,
+            });
+
+            if (verificationResponse.success) {
+              alert('Payment successful and course added!');
+            } else {
+              alert('Payment verification failed.');
+            }
+          } catch (error) {
+            console.error('Error in payment verification: ', error);
+            alert('Error verifying payment. Please try again.');
+          }
+        },
+      };
+
+      // Step 4: Open Razorpay Checkout widget
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+    } catch (error) {
+      console.error('Payment initiation failed: ', error);
+      alert('Payment initiation failed. Please try again later.');
+    }
+  };
