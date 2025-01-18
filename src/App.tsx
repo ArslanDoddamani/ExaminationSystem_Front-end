@@ -17,8 +17,10 @@ import Result from './pages/admin/Result';
 import Semester from './pages/student/Semester';
 import Dashboard from './pages/student/Dashboard';
 import StudentSubjects from './pages/admin/StudentSubjects';
+import Results from './pages/student/Results/Results';
 import Payments from './pages/admin/Payments';
 import Rr_Student from './pages/admin/Rr_Student';
+
 
 function App() {
   return (
@@ -46,7 +48,7 @@ function App() {
           <Route path="/payments" element={<PaymentHistory />} />
           <Route path="/semester" element={<Semester/>} />
           <Route path="/subject" element={<Subject />} />
-          <Route path="/result" element={<Semester/>} />
+          <Route path="/result" element={<Results/>} />
           
           
           {/* Admin Routes */}
