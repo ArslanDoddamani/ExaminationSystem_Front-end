@@ -1,18 +1,21 @@
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { Menu, User, BookOpen, GraduationCap, LogOut } from 'lucide-react';
 import Profile from './Profile';
 import Semester from './Semester';
-import Subjects from './Subjects/index';
+import Subjects from './Subject/index';
 import Results from './Results/Results';
 import PaymentHistory from './PaymentHistory/PaymentHistory';
-import ReRegistration from './Subjects/ReRegistration';
+import ReRegistration from './Subject/ReRegistration';
+
 
 const Dashboard = () => {
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userRole');
     window.location.href = '/login';
   };
+  const navigate=useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
@@ -26,41 +29,41 @@ const Dashboard = () => {
 
             {/* Navigation Links */}
             <div className="hidden sm:flex sm:space-x-8">
-              <Link
-                to=""
+              <span
+                
                 className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
               >
                 <User className="h-5 w-5" />
-                <span>Profile</span>
-              </Link>
-              <Link
-                to="payments"
+                <button>Profile</button>
+              </span>
+              <span
+                
                 className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
               >
                 <User className="h-5 w-5" />
-                <span>Payments</span>
-              </Link>
-              <Link
-                to="semester"
+                <button onClick={()=>navigate('/payments')}>Payments</button>
+              </span>
+              <span
+                
                 className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
               >
                 <BookOpen className="h-5 w-5" />
-                <span>Semester</span>
-              </Link>
-              <Link
-                to="subjects"
+                <button onClick={()=>navigate('/semester')}>Semester</button>
+              </span>
+              <span
+                
                 className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
               >
                 <Menu className="h-5 w-5" />
-                <span>Subjects</span>
-              </Link>
-              <Link
-                to="results"
+                <button onClick={()=>navigate('/subject')}>Subjects</button>
+              </span>
+              <span
+                
                 className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
               >
                 <GraduationCap className="h-5 w-5" />
-                <span>Results</span>
-              </Link>
+                <button onClick={()=>navigate('/result')}>Results</button>
+              </span>
             </div>
 
             {/* Logout Button */}

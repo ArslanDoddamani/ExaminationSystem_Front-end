@@ -15,13 +15,15 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      console.log('try');
       const response = await auth.login(formData.USN, formData.password);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userRole', response.data.user.role);
       console.log(response.data)
       localStorage.setItem('usn', response.data.user.USN);
-      navigate(`/${response.data.user.role}`);
+      navigate('/dashboard');
     } catch (error) {
+      console.log('catch '+error);
       setError('Invalid credentials');
     }
   };
