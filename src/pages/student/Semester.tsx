@@ -93,7 +93,7 @@ const Semester = () => {
   // Render the message if the USN is not assigned
   if (usn === "-1") {
     return (
-      <div className="semester-container bg-gray-900 text-white p-6 rounded-lg shadow-lg">
+      <div className="semester-container bg-gray-900 text-white min-h-screen p-6 rounded-lg shadow-lg">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Registered Subjects</h1>
           <p className="text-xl text-gray-400">
@@ -106,7 +106,7 @@ const Semester = () => {
 
   // Render the semester details if the USN is valid
   return (
-    <div className="semester-container bg-gray-900 text-white p-6 rounded-lg shadow-lg">
+    <div className="semester-container bg-gray-900 text-white min-h-screen p-6 shadow-lg">
       <h1 className="text-3xl font-bold text-center mb-6">Registered Subjects</h1>
 
       {/* If no subjects are registered */}

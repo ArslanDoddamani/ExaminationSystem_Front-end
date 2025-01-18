@@ -75,7 +75,7 @@ const PaymentHistory = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-900 text-white rounded-lg shadow-lg min-h-screen">
+    <div className="p-6 bg-gray-900 text-white shadow-lg min-h-screen">
       <h2 className="text-3xl font-bold text-center mb-6">Payment History</h2>
       {payments.length === 0 ? (
         <div className="text-center text-gray-500 py-8">
