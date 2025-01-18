@@ -128,7 +128,7 @@ const Subjects: React.FC = () => {
 
   if (usn === "-1") {
     return (
-      <div className="bg-gray-900 text-gray-200">
+      <div className="bg-gray-900 min-h-screen text-gray-200">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-6">Available Subjects</h1>
           <p className="text-lg text-gray-400">

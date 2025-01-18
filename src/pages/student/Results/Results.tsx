@@ -189,7 +189,7 @@ const Results = () => {
 
   if (usn === "-1") {
     return (
-      <div className="semester-container bg-gray-900 text-white p-6 rounded-lg shadow-lg">
+      <div className="semester-container min-h-screen bg-gray-900 text-white p-6 shadow-lg">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Result</h1>
           <p className="text-xl text-gray-400">
@@ -201,7 +201,7 @@ const Results = () => {
   }
 
   return (
-    <div key={date?.toISOString()}> {/* Add key to force re-mount */}
+    <div key={date?.toISOString()} className="min-h-screen"> {/* Add key to force re-mount */}
       <h1 className="text-3xl font-bold text-center mb-6">Result</h1>
       {currentTime > (date ?? new Date()) ? (
         <p className="text-xl text-center text-gray-400">Results not yet announced for this semester</p>

@@ -1,4 +1,4 @@
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Menu, User, BookOpen, GraduationCap, LogOut } from 'lucide-react';
 import Profile from './Profile';
 import Semester from './Semester';

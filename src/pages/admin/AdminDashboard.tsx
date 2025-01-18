@@ -46,16 +46,16 @@ const AdminDashboard = () => {
                     <h2 className="text-2xl font-semibold">Result</h2>
                 </button>
                 <button
-                    onClick={() => navigate('/admin/analytics')}
+                    onClick={() => navigate('/admin/payments')}
                     className="p-8 bg-gradient-to-r from-indigo-500 to-indigo-700 text-white rounded-lg shadow-2xl hover:from-indigo-600 hover:to-indigo-800 transform hover:scale-105 transition-all duration-300"
                 >
-                    <h2 className="text-2xl font-semibold">Analytics</h2>
+                    <h2 className="text-2xl font-semibold">Payments</h2>
                 </button>
                 <button
-                    onClick={() => navigate('/admin/settings')}
+                    onClick={() => navigate('/admin/rrStudent')}
                     className="p-8 bg-gradient-to-r from-pink-500 to-pink-700 text-white rounded-lg shadow-2xl hover:from-pink-600 hover:to-pink-800 transform hover:scale-105 transition-all duration-300"
                 >
-                    <h2 className="text-2xl font-semibold">Settings</h2>
+                    <h2 className="text-2xl font-semibold">Re-register Student</h2>
                 </button>
             </div>
         </div>

@@ -1,10 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import StudentDashboard from './pages/student/Dashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
-import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Subjects from './pages/admin/subjects';
 import Students from './pages/admin/students';
@@ -20,6 +18,9 @@ import Semester from './pages/student/Semester';
 import Dashboard from './pages/student/Dashboard';
 import StudentSubjects from './pages/admin/StudentSubjects';
 import Results from './pages/student/Results/Results';
+import Payments from './pages/admin/Payments';
+import Rr_Student from './pages/admin/Rr_Student';
+
 
 function App() {
   return (
@@ -41,6 +42,8 @@ function App() {
           <Route path="/admin/addFaculty" element={<AddFaculty/>}></Route>
           <Route path="/admin/result" element={<Result/>}></Route>
           <Route path="/admin/students/:studentId/subjects" element={<StudentSubjects />} />
+          <Route path="/admin/payments" element={<Payments />} />
+          <Route path="/admin/rrStudent" element={<Rr_Student />} />
 
           <Route path="/payments" element={<PaymentHistory />} />
           <Route path="/semester" element={<Semester/>} />
