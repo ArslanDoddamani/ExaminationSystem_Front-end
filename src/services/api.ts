@@ -1,8 +1,8 @@
 import axios from 'axios';
 //import.meta.env.VITE_BACKEND_URL ||
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api'
-  //baseURL: import.meta.env.VITE_BACKEND_URL || 'https://examinationsystembackend.vercel.app/api'
+  // baseURL: 'http://localhost:3001/api'
+  baseURL: import.meta.env.VITE_BACKEND_URL || 'https://examinationsystembackend.vercel.app/api'
 });
 
 api.interceptors.request.use((config) => {
@@ -53,10 +53,12 @@ export const admin = {
     api.post('/admin/login',{email,password}),
   assignUSN: (userId: string, USN: string) =>
     api.patch(`/admin/assign-usn/${userId}`, { USN }),
+  increaseSem: (userId: string, currentSemester: number) =>
+    api.patch(`/admin/increase-sem/${userId}`, { currentSemester }),
   allSubjects:()=>
     api.get('/admin/allSubjects'),
-  addGrades: (studentId: string, subjectId: string, grade: string) =>
-    api.patch('/admin/grades', { studentId, subjectId, grade }),
+  addGrades: (studentId: string, subjectId: string, grade: string, sem: number) =>
+    api.patch('/admin/grades', { studentId, subjectId, grade, sem }),
   DeleteSubject: (subjectId: string) =>
     api.delete('/admin/subject', { data: { subjectId } }),  
   FindSubject: (subjectId: string) =>

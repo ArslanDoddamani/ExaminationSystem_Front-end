@@ -34,6 +34,9 @@ const ReRegistration = () => {
 
         const res = await student.rrsubjects(userId);
 
+        console.log(res);
+        
+
         const subjectDetails = await Promise.all(
           res.data.data.map(async (id: string, index: number) => {
             const subjectRes = await student.getSubjectWithId(id);
@@ -67,12 +70,12 @@ const ReRegistration = () => {
         return;
       }
 
-      if (subject.grade === "W" && !selectedFaculty[subjectId]) {
+      if (subject.grade === "NE" && !selectedFaculty[subjectId]) {
         alert("Please select a faculty for this subject.");
         return;
       }
 
-      const fees = subject.grade === "W" ? subject.fees?.reRegistrationW : subject.fees?.reRegistrationF;
+      const fees = subject.grade === "NE" ? subject.fees?.reRegistrationW : subject.fees?.reRegistrationF;
       if (!fees) {
         alert("Fees information is missing for the subject.");
         return;
@@ -109,7 +112,7 @@ const ReRegistration = () => {
               semester: user.data.currentSemester,
               price: fees,
               subjectId: subject._id,
-              type: subject.grade === "W" ? "Reregister - W" : "Reregister - F",
+              type: subject.grade === "NE" ? "Reregister - NE" : "Reregister - F",
               facultyId: selectedFaculty[subject._id]?.facultyId,
             });
 
@@ -147,58 +150,62 @@ const ReRegistration = () => {
     <div className="min-h-screen bg-gray-900 text-gray-200 p-6">
       <h1 className="text-3xl font-bold text-center mb-6">Reregister Subjects</h1>
       <div className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse border border-gray-700 text-sm md:text-base">
-          <thead>
-            <tr className="bg-gray-800 text-gray-200">
-              <th className="border border-gray-700 px-4 py-2">Sl No</th>
-              <th className="border border-gray-700 px-4 py-2">Subject Code</th>
-              <th className="border border-gray-700 px-4 py-2">Subject Name</th>
-              <th className="border border-gray-700 px-4 py-2">Credits</th>
-              <th className="border border-gray-700 px-4 py-2">Grade</th>
-              <th className="border border-gray-700 px-4 py-2">Faculty</th>
-              <th className="border border-gray-700 px-4 py-2">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {subjects.map((subject: Subject, index: number) => (
-              <tr key={`${subject.id}-${index}`} className="text-center hover:bg-gray-700 transition duration-200">
-                <td className="border border-gray-700 px-4 py-2">{index + 1}</td>
-                <td className="border border-gray-700 px-4 py-2">{subject.code}</td>
-                <td className="border border-gray-700 px-4 py-2">{subject.name}</td>
-                <td className="border border-gray-700 px-4 py-2">{subject.credits}</td>
-                <td className="border border-gray-700 px-4 py-2">{subject.grade}</td>
-                <td className="border border-gray-700 px-6 py-2">
-                  {subject.grade !== "F" ? (
-                    <select
-                      onChange={(e) => handleFacultyChange(subject._id, e.target.value)}
-                      className="bg-gray-800 text-gray-200 border border-gray-600 w-3/4 py-1 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Select Faculty</option>
-                      {facultys.map((faculty: Faculty) => (
-                        <option key={faculty._id} value={faculty._id}>
-                          {faculty.name}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <span className="text-red-500">Not Applicable</span>
-                  )}
-                </td>
-                <td className="border border-gray-700 px-4 py-2">
-                  <button
-                    disabled={loading}
-                    onClick={() => handleReRegister(subject._id)}
-                    className={`${
-                      loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
-                    } text-white font-semibold py-1 px-4 rounded-lg transition-all duration-300 focus:outline-none`}
-                  >
-                    Re-register
-                  </button>
-                </td>
+        {subjects.length === 0 ? (
+          <p className="text-center text-red-500">No re-registration subjects available.</p>
+        ) : (
+          <table className="table-auto w-full border-collapse border border-gray-700 text-sm md:text-base">
+            <thead>
+              <tr className="bg-gray-800 text-gray-200">
+                <th className="border border-gray-700 px-4 py-2">Sl No</th>
+                <th className="border border-gray-700 px-4 py-2">Subject Code</th>
+                <th className="border border-gray-700 px-4 py-2">Subject Name</th>
+                <th className="border border-gray-700 px-4 py-2">Credits</th>
+                <th className="border border-gray-700 px-4 py-2">Grade</th>
+                <th className="border border-gray-700 px-4 py-2">Faculty</th>
+                <th className="border border-gray-700 px-4 py-2">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {subjects.map((subject: Subject, index: number) => (
+                <tr key={`${subject.id}-${index}`} className="text-center hover:bg-gray-700 transition duration-200">
+                  <td className="border border-gray-700 px-4 py-2">{index + 1}</td>
+                  <td className="border border-gray-700 px-4 py-2">{subject.code}</td>
+                  <td className="border border-gray-700 px-4 py-2">{subject.name}</td>
+                  <td className="border border-gray-700 px-4 py-2">{subject.credits}</td>
+                  <td className="border border-gray-700 px-4 py-2">{subject.grade}</td>
+                  <td className="border border-gray-700 px-6 py-2">
+                    {subject.grade !== "F" ? (
+                      <select
+                        onChange={(e) => handleFacultyChange(subject._id, e.target.value)}
+                        className="bg-gray-800 text-gray-200 border border-gray-600 w-3/4 py-1 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select Faculty</option>
+                        {facultys.map((faculty: Faculty) => (
+                          <option key={faculty._id} value={faculty._id}>
+                            {faculty.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="text-red-500">Not Applicable</span>
+                    )}
+                  </td>
+                  <td className="border border-gray-700 px-4 py-2">
+                    <button
+                      disabled={loading}
+                      onClick={() => handleReRegister(subject._id)}
+                      className={`${
+                        loading ? "bg-gray-600 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+                      } text-white font-semibold py-1 px-4 rounded-lg transition-all duration-300 focus:outline-none`}
+                    >
+                      Re-register
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

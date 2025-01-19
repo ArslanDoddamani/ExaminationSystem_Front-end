@@ -16,7 +16,7 @@ export default function Subjects() {
     }
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
     if (name.startsWith('fees.')) {
@@ -52,6 +52,20 @@ export default function Subjects() {
       });
 
       alert('Subject added successfully!');
+      // Reset form after successful registration
+      setFormData({
+        code: '',
+        name: '',
+        credits: '',
+        semester: '',
+        department: '',
+        fees: {
+          registration: '',
+          reRegistrationF: '',
+          reRegistrationW: '',
+          challengeValuation: ''
+        }
+      });
     } catch (error) {
       console.error('Error adding subject:', error);
       alert('Failed to add subject. Please try again.');
@@ -118,15 +132,21 @@ export default function Subjects() {
 
           <div>
             <label htmlFor="department" className="block text-md font-medium">Department:</label>
-            <input
-              type="text"
+            <select
               name="department"
               id="department"
               value={formData.department}
               onChange={handleChange}
               className="mt-1 block w-full pl-3 pr-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-black"
               required
-            />
+            >
+              <option value="">Select Department</option>
+              <option value="Computer Science and Engineering">Computer Science and Engineering</option>
+              <option value="Electrical Engineering">Electrical Engineering</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="Biotechnology">Biotechnology</option>
+            </select>
           </div>
 
           <div>

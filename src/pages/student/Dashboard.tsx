@@ -15,7 +15,7 @@ const Dashboard = () => {
     localStorage.removeItem('userRole');
     window.location.href = '/login';
   };
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
@@ -29,41 +29,56 @@ const Dashboard = () => {
 
             {/* Navigation Links */}
             <div className="hidden sm:flex sm:space-x-8">
-              <span
-                
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
-              >
-                <User className="h-5 w-5" />
-                <button>Profile</button>
-              </span>
-              <span
-                
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
-              >
-                <User className="h-5 w-5" />
-                <button onClick={()=>navigate('/payments')}>Payments</button>
-              </span>
-              <span
-                
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
-              >
-                <BookOpen className="h-5 w-5" />
-                <button onClick={()=>navigate('/semester')}>Semester</button>
-              </span>
-              <span
-                
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
-              >
-                <Menu className="h-5 w-5" />
-                <button onClick={()=>navigate('/subject')}>Subjects</button>
-              </span>
-              <span
-                
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
-              >
-                <GraduationCap className="h-5 w-5" />
-                <button onClick={()=>navigate('/result')}>Results</button>
-              </span>
+              
+              <button>
+                <span
+
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
+                >
+                  <User className="h-5 w-5 mr-2" />
+                  Profile
+                </span>
+              </button>
+
+              <button onClick={() => navigate('/payments')}>
+                <span
+
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
+                >
+                  <User className="h-5 w-5 mr-2" />
+                  Payments
+                </span>
+              </button>
+
+              <button onClick={() => navigate('/semester')}>
+                <span
+
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
+                >
+                  <BookOpen className="h-5 w-5 mr-2" />
+                  Semester
+                </span>
+              </button>
+
+              <button onClick={() => navigate('/subject')}>
+                <span
+
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
+                >
+                  <Menu className="h-5 w-5 mr-2" />
+                  Subjects
+                </span>
+              </button>
+
+              <button onClick={() => navigate('/result')}>
+                <span
+
+                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-300 hover:bg-indigo-600 hover:text-white transition-all duration-200"
+                >
+                  <GraduationCap className="h-5 w-5 mr-2" />
+                  Results
+                </span>
+              </button>
             </div>
 
             {/* Logout Button */}

@@ -11,15 +11,17 @@ interface Subject {
   grade?: string;
   type?: string;
   _id: string;
+  sem: number;
 }
 
 interface RegisteredSubject {
   subject: string;
   grade?: string;
   registerType?: string;
+  semester: number;
 }
 
-const GRADE_OPTIONS = ["O", "A+", "A", "B+", "B", "C", "P", "F", "W"];
+const GRADE_OPTIONS = ["O", "A+", "A", "B+", "B", "C", "P", "F", "NE"];
 
 const StudentSubjects = () => {
   const { studentId } = useParams<{ studentId: string }>();
@@ -37,7 +39,7 @@ const StudentSubjects = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [grades, setGrades] = useState<{ [subjectId: string]: string }>({});
+  const [grades, setGrades] = useState<{ [key: string]: string }>({});
 
   const fetchSubjects = async () => {
     setLoading(true);
@@ -50,6 +52,7 @@ const StudentSubjects = () => {
       const subjectIds = data.map((item) => item.subject);
       const gradesArray = data.map((item) => item.grade);
       const registerTypes = data.map((item) => item.registerType);
+      const sems = data.map((item) => item.semester);
 
       const subjectDetails = await Promise.all(
         subjectIds.map(async (subjectId, index) => {
@@ -59,6 +62,7 @@ const StudentSubjects = () => {
               ...subjectResponse.data,
               grade: gradesArray[index],
               type: registerTypes[index],
+              sem: sems[index] 
             };
           } catch (err) {
             console.error(`Error fetching subject with ID ${subjectId}:`, err);
@@ -71,7 +75,7 @@ const StudentSubjects = () => {
       setSubjects(validSubjects);
 
       const initialGrades = validSubjects.reduce((acc, subject) => {
-        acc[subject._id] = subject.grade || "";
+        acc[`${subject.code}-${subject.sem}`] = subject.grade || "";
         return acc;
       }, {} as { [subjectId: string]: string });
 
@@ -88,15 +92,17 @@ const StudentSubjects = () => {
     fetchSubjects();
   }, [studentId]);
 
-  const handleGradeChange = (subjectId: string, gradePoint: string) => {
+  const handleGradeChange = (subjectId: string, sem: number, gradePoint: string) => {
+    const key = `${subjectId}-${sem}`;
     setGrades((prevGrades) => ({
       ...prevGrades,
-      [subjectId]: gradePoint,
+      [key]: gradePoint,
     }));
   };
 
-  const handleSubmit = async (subjectId: string) => {
-    const grade = grades[subjectId];
+  const handleSubmit = async (subjectId: string, sem: number) => {
+    const key = `${subjectId}-${sem}`;
+    const grade = grades[key];
     if (!grade) {
       alert("Please select a grade before submitting.");
       return;
@@ -104,8 +110,7 @@ const StudentSubjects = () => {
 
     try {
       if (studentId) {
-        console.log(studentId, subjectId, grade);
-        await admin.addGrades(studentId, subjectId, grade);
+        await admin.addGrades(studentId, subjectId, grade, sem);
         alert("Grade updated successfully.");
         fetchSubjects();
       } else {
@@ -147,17 +152,17 @@ const StudentSubjects = () => {
             </thead>
             <tbody>
               {subjects.map((subject) => (
-                <tr key={subject.code} className="hover:bg-gray-600">
+                <tr key={`${subject.code}-${subject.sem}`} className="hover:bg-gray-600">
                   <td className="p-3 border border-gray-600">{subject.name}</td>
-                  <td className="p-3 border border-gray-600">{subject.semester}</td>
+                  <td className="p-3 border border-gray-600">{subject.sem}</td>
                   <td className="p-3 border border-gray-600">{subject.credits}</td>
                   <td className="p-3 border border-gray-600">{subject.department}</td>
                   <td className="p-3 border border-gray-600">{subject.type}</td>
                   <td className="p-3 border border-gray-600">{subject.grade}</td>
                   <td className="p-3 border border-gray-600">
                     <select
-                      value={grades[subject._id] || ""}
-                      onChange={(e) => handleGradeChange(subject._id, e.target.value)}
+                      value={grades[`${subject._id}-${subject.sem}`] || ""}
+                      onChange={(e) => handleGradeChange(subject._id, subject.sem, e.target.value)}
                       className="bg-gray-800 text-white p-2 rounded border border-gray-600"
                     >
                       <option value="">Select Grade</option>
@@ -170,7 +175,7 @@ const StudentSubjects = () => {
                   </td>
                   <td className="p-3 border border-gray-600">
                     <button
-                      onClick={() => handleSubmit(subject._id)}
+                      onClick={() => handleSubmit(subject._id, subject.sem)}
                       className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
                     >
                       Submit Grade

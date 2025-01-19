@@ -20,6 +20,7 @@ import StudentSubjects from './pages/admin/StudentSubjects';
 import Results from './pages/student/Results/Results';
 import Payments from './pages/admin/Payments';
 import Rr_Student from './pages/admin/Rr_Student';
+import ReRegistration from './pages/student/Subject/ReRegistration';
 
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
           <Route path="/payments" element={<PaymentHistory />} />
           <Route path="/semester" element={<Semester/>} />
           <Route path="/subject" element={<Subject />} />
+          <Route path="/subject/reregister" element={<ReRegistration />} />
           <Route path="/result" element={<Results/>} />
           
           

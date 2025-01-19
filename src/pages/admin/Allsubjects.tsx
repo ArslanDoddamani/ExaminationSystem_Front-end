@@ -127,7 +127,7 @@ export default function AllSubjects() {
                   Re-Registration (F)
                 </th>
                 <th className="p-3 border-b border-gray-600">
-                  Re-Registration (W)
+                  Re-Registration (NE)
                 </th>
                 <th className="p-3 border-b border-gray-600">
                   Challenge Valuation

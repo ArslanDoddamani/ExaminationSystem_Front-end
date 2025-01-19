@@ -74,6 +74,33 @@ const Students = () => {
     }
   }
 
+  async function IncSem(userId: string) {
+    const semInput = prompt("Enter the Semester");
+
+    if (!semInput || semInput.trim() === "") {
+      alert("Invalid semester. Please enter a valid semester.");
+      return;
+    }
+
+    const currentSemester = Number(semInput.trim());
+
+    try {
+      const res = await admin.increaseSem(userId, currentSemester);
+      if (res.status === 200) {
+        alert("Semester increased successfully");
+        setStudents((prev) =>
+          prev.map((student) =>
+            student._id === userId ? { ...student, currentSemester } : student
+          )
+        );
+      } else {
+        alert("Error while increasing Semester");
+      }
+    } catch (error) {
+      alert("An error occurred: " + error);
+    }
+  }
+
   async function DeleteStudent(studentId: string, name: string) {
     const confirmDelete = confirm(`Are you sure you want to delete ${name}?`);
     if (!confirmDelete) return;
@@ -164,6 +191,7 @@ const Students = () => {
                 <th className="p-4 border border-gray-700">Current Semester</th>
                 <th className="p-4 border border-gray-700">Registered Subjects</th>
                 <th className="p-4 border border-gray-700">Assign USN</th>
+                <th className="p-4 border border-gray-700">Increase Sem</th>
                 <th className="p-4 border border-gray-700">Actions</th>
               </tr>
             </thead>
@@ -204,6 +232,14 @@ const Students = () => {
                       onClick={() => AddUsn(student._id)}
                     >
                       Assign
+                    </button>
+                  </td>
+                  <td className="p-3 border border-gray-700 text-center">
+                    <button
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded-lg shadow"
+                      onClick={() => IncSem(student._id)}
+                    >
+                      Increase
                     </button>
                   </td>
                   <td className="p-3 border border-gray-700 text-center">

@@ -33,16 +33,19 @@ const Subjects: React.FC = () => {
       try {
         // Fetch the profile
         const res = await student.getProfile();
-        setSemester(res.data.currentSemester);
-
-        // Ensure currentSemester is valid
-        if (!res.data.currentSemester) {
-          console.error("Invalid currentSemester:", res.data.currentSemester);
-          return;
+        
+        if(res.data.currentSemester == 0){
+          setSemester(1);
+        }
+        else{
+          setSemester(res.data.currentSemester);
         }
 
+
+        const sem = res.data.currentSemester == 0 ? 1 : res.data.currentSemester
+        
         // Fetch subjects by semester
-        const response = await student.getSubjectsBySemester(res.data.currentSemester);
+        const response = await student.getSubjectsBySemester(sem);
 
         // Check if subjects exist
         if (Array.isArray(response.data.subjects) && response.data.subjects.length > 0) {
@@ -51,6 +54,8 @@ const Subjects: React.FC = () => {
           console.warn("No subjects found for the current semester:", res.data.currentSemester);
           setSubjects([]); // Set to empty array if no subjects
         }
+        
+
       } catch (error) {
         console.error("Error fetching subjects:", error);
       }
@@ -74,7 +79,7 @@ const Subjects: React.FC = () => {
     try {
       setLoading(true);
 
-      const orderResponse = await student.createOrder(semester, 1500);
+      const orderResponse = await student.createOrder(semester, 2100);
       const { order } = orderResponse.data;
 
       const apiKeyResponse = await student.getApiKey();
@@ -128,9 +133,9 @@ const Subjects: React.FC = () => {
 
   if (usn === "-1") {
     return (
-      <div className="bg-gray-900 min-h-screen text-gray-200">
+      <div className="p-6 bg-gray-900 min-h-screen text-gray-200">
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-6">Available Subjects</h1>
+          <h1 className="text-3xl font-bold text-center mb-6">Available Subjects</h1>
           <p className="text-lg text-gray-400">
             Your USN has not been assigned by the admin yet. Please contact the admin for assistance.
           </p>
@@ -144,7 +149,7 @@ const Subjects: React.FC = () => {
       <ul className="mb-10 ml-36 ">
         <li className="mb-4 list-disc">
           <Link
-            to="/student/subjects/reregister"
+            to="reregister"
             className="text-xl font-semibold text-blue-500 hover:text-blue-600 transition-all duration-300"
           >
             Reregister
@@ -153,7 +158,7 @@ const Subjects: React.FC = () => {
       </ul>
 
       <div className="container mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8">Available Subjects</h1>
+        <h1 className="text-3xl font-bold text-center mb-6">Available Subjects</h1>
 
         {subjects.length === 0 ? (
           <p className="text-center text-lg">Loading subjects...</p>

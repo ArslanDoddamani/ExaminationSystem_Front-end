@@ -16,10 +16,10 @@ interface Payment {
   userUSN: string;
 }
 
-const AdminPayments: React.FC = () => {
+const Payments: React.FC = () => {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [filteredPayments, setFilteredPayments] = useState<Payment[]>([]);
-  const [searchUSN, setSearchUSN] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -36,13 +36,15 @@ const AdminPayments: React.FC = () => {
   }, []);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const usn = e.target.value.toUpperCase(); // Case-insensitive search
-    setSearchUSN(usn);
-    if (usn === '') {
+    const term = e.target.value.toLowerCase(); // Case-insensitive search
+    setSearchTerm(term);
+    if (term === '') {
       setFilteredPayments(payments); // Reset if search is cleared
     } else {
       const filtered = payments.filter(payment =>
-        payment.userUSN.toUpperCase().includes(usn)
+        payment.userUSN.toLowerCase().includes(term) ||
+        payment.subject?.code?.toLowerCase().includes(term) ||
+        payment.razorpay_payment_id?.toLowerCase().includes(term)
       );
       setFilteredPayments(filtered);
     }
@@ -50,66 +52,57 @@ const AdminPayments: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
-      <h1 className="mb-4">All Payments</h1>
+      <h1 className="text-4xl font-bold mb-6 text-center">All Payments</h1>
 
-      <div className="mb-4">
+      <div className="mb-6 flex justify-center">
         <input
           type="text"
-          placeholder="Search by USN"
-          value={searchUSN}
+          placeholder="Search by USN, Subject Code, or Payment ID"
+          value={searchTerm}
           onChange={handleSearch}
-          className="p-2 rounded border border-gray-300 text-black"
-          style={{ width: '300px' }}
+          className="w-full max-w-lg p-3 rounded bg-gray-800 text-gray-300 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
-      <table style={{ width: '100%', border: '1px solid #ddd' }}>
-        <thead>
-          <tr>
-            <th style={headerCellStyle}>User Name</th>
-            <th style={headerCellStyle}>USN</th>
-            <th style={headerCellStyle}>Amount</th>
-            <th style={headerCellStyle}>Type</th>
-            <th style={headerCellStyle}>Status</th>
-            <th style={headerCellStyle}>Subject Name</th>
-            <th style={headerCellStyle}>Subject Code</th>
-            <th style={headerCellStyle}>Order ID</th>
-            <th style={headerCellStyle}>Payment ID</th>
-            <th style={headerCellStyle}>Created At</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredPayments.map((payment, index) => (
-            <tr key={index} style={{ borderBottom: '1px solid #ddd' }}>
-              <td style={cellStyle}>{payment.userName}</td>
-              <td style={cellStyle}>{payment.userUSN}</td>
-              <td style={cellStyle}>{payment.amount}</td>
-              <td style={cellStyle}>{payment.type}</td>
-              <td style={cellStyle}>{payment.status}</td>
-              <td style={cellStyle}>{payment.subject?.name || '-'}</td>
-              <td style={cellStyle}>{payment.subject?.code || '-'}</td>
-              <td style={cellStyle}>{payment.razorpay_order_id || '-'}</td>
-              <td style={cellStyle}>{payment.razorpay_payment_id || '-'}</td>
-              <td style={cellStyle}>{new Date(payment.createdAt).toLocaleString()}</td>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse text-sm">
+          <thead className="bg-gray-800 text-gray-300">
+            <tr>
+              <th className="px-4 py-2 border border-gray-700 text-xl">User Name</th>
+              <th className="px-4 py-2 border border-gray-700 text-xl">USN</th>
+              <th className="px-4 py-2 border border-gray-700 text-xl">Amount</th>
+              <th className="px-4 py-2 border border-gray-700 text-xl">Type</th>
+              <th className="px-4 py-2 border border-gray-700 text-xl">Subject Name</th>
+              <th className="px-4 py-2 border border-gray-700 text-xl">Subject Code</th>
+              <th className="px-4 py-2 border border-gray-700 text-xl">Payment ID</th>
+              <th className="px-4 py-2 border border-gray-700 text-xl">Created At</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredPayments.map((payment, index) => (
+              <tr
+                key={index}
+                className={`${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-700'} hover:bg-gray-600`}
+              >
+                <td className="px-4 py-2 border border-gray-700 text-lg">{payment.userName}</td>
+                <td className="px-4 py-2 border border-gray-700 text-lg">{payment.userUSN}</td>
+                <td className="px-4 py-2 border border-gray-700 text-lg">{payment.amount}</td>
+                <td className="px-4 py-2 border border-gray-700 text-lg">{payment.type}</td>
+                <td className="px-4 py-2 border border-gray-700 text-lg">{payment.subject?.name || '-'}</td>
+                <td className="px-4 py-2 border border-gray-700 text-lg">{payment.subject?.code || '-'}</td>
+                <td className="px-4 py-2 border border-gray-700 text-lg">{payment.razorpay_payment_id || '-'}</td>
+                <td className="px-4 py-2 border border-gray-700 text-lg">{new Date(payment.createdAt).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p className="text-gray-400 mt-4 text-center">
+        Showing {filteredPayments.length} of {payments.length} records
+      </p>
     </div>
   );
 };
 
-// Styles for the table
-const headerCellStyle: React.CSSProperties = {
-  padding: '10px',
-  textAlign: 'left',
-  backgroundColor: 'black',
-  fontWeight: 'bold',
-};
-
-const cellStyle: React.CSSProperties = {
-  padding: '10px',
-  textAlign: 'left',
-};
-
-export default AdminPayments;
+export default Payments;

@@ -11,6 +11,8 @@ interface Subject {
     department: string;
     semester: number;
   };
+  sem: number;
+  type: string;
   grade: string;
   flag: boolean;
 }
@@ -37,10 +39,12 @@ const Semester = () => {
   
       // Step 1: Fetch registered subject IDs and grades
       const res = await student.registeredsubjects(userId); // API returns {"subjects": [...]}
+      
       const subjectIds = res.data.map((item: any) => item.subject);
       const grades = res.data.map((item: any) => item.grade);
       const flags = res.data.map((item: any) => item.flag)
-
+      const types = res.data.map((item: any) => item.registerType)
+      const sems = res.data.map((item: any) => item.semester)
   
       if (subjectIds.length === 0) {
         setSubjects([]); // No subjects registered
@@ -55,9 +59,12 @@ const Semester = () => {
             ...subjectDetails.data, 
             grade: grades[index],
             flag: flags[index],
+            type: types[index],
+            sem: sems[index]
           };
         })
       );
+      
       setSubjects(subjectsData); // Update subjects with grades
     } catch (error) {
       console.error("Error fetching registered subjects:", error);
@@ -93,9 +100,9 @@ const Semester = () => {
   // Render the message if the USN is not assigned
   if (usn === "-1") {
     return (
-      <div className="semester-container bg-gray-900 text-white min-h-screen p-6 rounded-lg shadow-lg">
+      <div className="semester-container bg-gray-900 text-white min-h-screen p-6 shadow-lg">
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">Registered Subjects</h1>
+          <h1 className="text-3xl font-bold text-center mb-6">Registered Subjects</h1>
           <p className="text-xl text-gray-400">
             Your USN has not been assigned by the admin yet. Please contact the admin for assistance.
           </p>
@@ -139,6 +146,8 @@ const Semester = () => {
                 <th className="py-2 px-4 text-left text-lg">Subject Code</th>
                 <th className="py-2 px-4 text-left text-lg">Subject Name</th>
                 <th className="py-2 px-4 text-left text-lg">Credits</th>
+                <th className="py-2 px-4 text-left text-lg">Semester</th>
+                <th className="py-2 px-4 text-left text-lg">Type</th>
                 <th className="py-2 px-4 text-left text-lg">Department</th>
                 <th className="py-2 px-4 text-left text-lg">Semester</th>
                 <th className="py-2 px-4 text-left text-lg">Grade</th>
@@ -150,6 +159,8 @@ const Semester = () => {
                   <td className="py-2 px-4">{subject?.subject?.code}</td>
                   <td className="py-2 px-4">{subject?.subject?.name}</td>
                   <td className="py-2 px-4">{subject?.subject?.credits}</td>
+                  <td className="py-2 px-4">{subject?.sem}</td>
+                  <td className="py-2 px-4">{subject?.type}</td>
                   <td className="py-2 px-4">{subject?.subject?.department}</td>
                   <td className="py-2 px-4">{subject?.subject?.semester}</td>
                   <td className="py-2 px-4">{subject.flag ? subject.grade : '-'}</td>
