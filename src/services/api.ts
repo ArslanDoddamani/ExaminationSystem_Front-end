@@ -1,8 +1,8 @@
 import axios from 'axios';
-
+//import.meta.env.VITE_BACKEND_URL ||
 const api = axios.create({
-  // baseURL: import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001/api'
-  baseURL: import.meta.env.VITE_BACKEND_URL || 'https://examinationsystembackend.vercel.app/api'
+  baseURL: 'http://localhost:3001/api'
+  //baseURL: import.meta.env.VITE_BACKEND_URL || 'https://examinationsystembackend.vercel.app/api'
 });
 
 api.interceptors.request.use((config) => {
@@ -64,6 +64,8 @@ export const admin = {
   LaunchResult: (data:any) => api.patch('/admin/launch-result', data),
   allchallengevaluations: ()=> api.get('/admin/challengevaluations'),
   updateChallengeEvaluationStatus: (data: any)=> api.patch('/admin/challengevaluations/status',data),
+  //allPayments: () => api.get('/admin/payments'),
+  fetchPayments: () => api.get('/admin/payments'),
 };
 
 export const Faculty={
